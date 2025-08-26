@@ -20,7 +20,8 @@ function normalize(item: any) {
 
 export const TransactionService = {
   async fetchTransactions({ q, page, pageSize }: FetchParams) {
-    const base = process.env.YAYA_BASE_URL || "https://sandbox.yayawallet.com";
+    const base =
+      process.env.YAYA_BASE_URL || "https://sandbox.yayawallet.com/api/en";
 
     const headers: any = {
       "Content-Type": "application/json",
@@ -86,6 +87,7 @@ export const TransactionService = {
     const start = (page - 1) * pageSize;
     const end = start + pageSize;
     const paged = normalized.slice(start, end);
+    console.log("**********Data from service", paged);
 
     return { items: paged, page, pageSize, total };
   },

@@ -2,18 +2,24 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import hpp from "hpp";
-import transactionRoute from "./routes/transactionsRoute";
+import transactionRouter from "./routes/transactionsRoute";
+import { errorHandler, notFound } from "./middlewares/errorHandler";
 
 const app = express();
 
 const PORT = process.env.PORT || 4000;
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(helmet());
 app.use(cors({ origin: true, credentials: true }));
-app.use(express.json({ limit: "1mb" }));
 app.use(hpp());
 
-app.use("/api", transactionRoute);
+app.use("/api", transactionRouter);
+
+app.use(errorHandler);
+app.use(notFound);
 
 app.listen(PORT, () => {
   console.log(`Server is running on :${PORT}`);

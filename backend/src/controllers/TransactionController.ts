@@ -16,6 +16,7 @@ export async function getTransactions(
       page,
       pageSize,
     });
+    console.log("*************Data from transaction", data);
     res.json(data);
   } catch (err) {
     next(err);
