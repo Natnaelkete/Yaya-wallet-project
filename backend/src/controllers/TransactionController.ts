@@ -1,24 +1,32 @@
-import { Request, Response, NextFunction } from "express";
-import { TransactionService } from "../services/TransactionService.js";
+import { Request, Response } from "express";
+import {
+  fetchTransactions,
+  TransactionDTO,
+} from "../services/TransactionService";
 
-export async function getTransactions(
+export const getTransactions = async (
   req: Request,
-  res: Response,
-  next: NextFunction
-) {
+  res: Response
+): Promise<void> => {
   try {
-    const q = (req.query.q as string) || undefined;
-    const page = req.query.page ? Number(req.query.page) : 1;
-    const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10;
+    const { p = "1", query = "" } = req.query;
+    const page = parseInt(p as string) || 1;
+    const limit = 10;
+    const offset = (page - 1) * limit;
 
-    const data = await TransactionService.fetchTransactions({
-      q,
+    const transactions: TransactionDTO[] = await fetchTransactions(
+      query as string
+    );
+
+    const paginated = transactions.slice(offset, offset + limit);
+
+    res.json({
       page,
-      pageSize,
+      total: transactions.length,
+      data: paginated,
     });
-    console.log("*************Data from transaction", data);
-    res.json(data);
   } catch (err) {
-    next(err);
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch transactions" });
   }
-}
+};

@@ -4,6 +4,7 @@ import helmet from "helmet";
 import hpp from "hpp";
 import transactionRouter from "./routes/transactionsRoute";
 import { errorHandler, notFound } from "./middlewares/errorHandler";
+import { rateLimiter } from "./middlewares/rateLimiter";
 
 const app = express();
 
@@ -15,6 +16,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(cors({ origin: true, credentials: true }));
 app.use(hpp());
+
+app.use("/api", rateLimiter);
 
 app.use("/api", transactionRouter);
 
