@@ -38,16 +38,17 @@ function generateSignature({
 
 export const TransactionService = {
   async fetchTransactions({ q, page, pageSize }: FetchParams) {
-    const base =
-      process.env.YAYA_BASE_URL || "https://sandbox.yayawallet.com/api/en";
+    // Correct Base URL
+    const base = process.env.YAYA_BASE_URL || "https://sandbox.yayawallet.com";
     const apiKey = process.env.YAYA_API_KEY!;
     const apiSecret = process.env.YAYA_API_SECRET!;
 
     const isSearch = q && q.length > 0;
-    const endpoint = isSearch
-      ? "/transaction/search"
-      : "/transaction/find-by-user";
     const method = isSearch ? "POST" : "GET";
+    const endpoint = isSearch
+      ? "/api/en/transaction/search"
+      : "/api/en/transaction/find-by-user";
+
     const body = isSearch ? JSON.stringify({ query: q }) : "";
 
     const timestamp = Date.now().toString();
