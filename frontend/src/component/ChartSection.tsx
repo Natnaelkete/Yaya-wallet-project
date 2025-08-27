@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
 import {
   LineChart,
   Line,
@@ -8,12 +9,36 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { fetchTransactions } from "../utils/fetchTransactionChart";
+import type { Transaction } from "../App";
 
-type ChartSectionProps = {
-  chartData: { date: string; amount: number }[];
+type PageResp = {
+  items: Transaction[];
+  page: number;
+  pageSize: number;
+  total: number;
 };
 
-export default function ChartSection({ chartData }: ChartSectionProps) {
+export default function ChartSection() {
+  const [data, setData] = useState<PageResp | null>(null);
+
+  useEffect(() => {
+    fetchTransactions().then((res) => setData(res));
+  }, []);
+
+  const chartData = useMemo(() => {
+    if (!data) return [];
+    const map = new Map<string, number>();
+    for (const t of data.items) {
+      const d = new Date(t.createdAt).toISOString().slice(0, 10);
+      map.set(d, (map.get(d) || 0) + t.amount);
+    }
+    return Array.from(map.entries()).map(([date, amount]) => ({
+      date,
+      amount,
+    }));
+  }, [data]);
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 10 }}

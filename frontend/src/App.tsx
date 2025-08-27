@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import useDarkMode from "./hooks/useDarkmood";
 import Header from "./component/Header";
 import ChartSection from "./component/ChartSection";
 import TransactionsSection from "./component/TransactionSection";
-import { fetchTransactions } from "./utils/fetchTransactionChart";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
 
@@ -32,28 +31,6 @@ export default function App() {
   const [data, setData] = useState<PageResp | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    fetchTransactions(q, page, pageSize)
-      .then((res) => setData(res))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [q, page, pageSize]);
-
-  const chartData = useMemo(() => {
-    if (!data) return [];
-    const map = new Map<string, number>();
-    for (const t of data.items) {
-      const d = new Date(t.createdAt).toISOString().slice(0, 10);
-      map.set(d, (map.get(d) || 0) + t.amount);
-    }
-    return Array.from(map.entries()).map(([date, amount]) => ({
-      date,
-      amount,
-    }));
-  }, [data]);
 
   async function fetchData() {
     setLoading(true);
@@ -92,7 +69,7 @@ export default function App() {
       />
 
       <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-        <ChartSection chartData={chartData} />
+        <ChartSection />
         <TransactionsSection
           data={data}
           loading={loading}
