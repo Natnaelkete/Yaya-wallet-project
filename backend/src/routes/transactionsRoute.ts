@@ -13,6 +13,6 @@ const querySchema = z.object({
   }),
 });
 
-router.post("/transactions", validate(querySchema), getTransactions);
+router.get("/transactions", validate(querySchema), getTransactions);
 
 export default router;
