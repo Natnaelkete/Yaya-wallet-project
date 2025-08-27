@@ -77,7 +77,7 @@ export const TransactionService = {
 
     if (!resp.ok) {
       const text = await resp.text();
-      throw new Error(`YaYa API request failed: ${resp.status} ${text}`);
+      throw new Error(`YaYa API request failed: ${resp.status}`);
     }
 
     const data: any = await resp.json();
